@@ -1,0 +1,243 @@
+@import url('https://fonts.googleapis.com/css2?family=Newsreader:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #F7F4EC;
+    color: #1A1A1A;
+    line-height: 1.6;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* ─── NAVIGATION ─────────────────────────────────────────── */
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 20px 40px;
+    border-bottom: 2px solid #0B3D2E;
+    background-color: #F7F4EC;
+}
+
+nav h2 {
+    font-family: 'Newsreader', serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: #0B3D2E;
+    letter-spacing: -0.3px;
+}
+
+nav .menu {
+    display: flex;
+    gap: 28px;
+    font-size: 14px;
+}
+
+nav .menu a {
+    color: #1A1A1A;
+    padding-bottom: 4px;
+    border-bottom: 2px solid transparent;
+    transition: border-color 0.2s;
+}
+
+nav .menu a:hover {
+    border-bottom-color: #C8552B;
+}
+
+/* ─── SECTION PRINCIPALE ─────────────────────────────────── */
+
+.hero {
+    padding: 56px 40px;
+    max-width: 760px;
+    margin: 0 auto;
+}
+
+.hero h1 {
+    font-family: 'Newsreader', serif;
+    font-size: 36px;
+    font-weight: 600;
+    color: #0B3D2E;
+    line-height: 1.15;
+    margin-bottom: 20px;
+}
+
+.hero p {
+    font-size: 16px;
+    color: #1A1A1A;
+    opacity: 0.8;
+    margin-bottom: 24px;
+}
+
+/* ─── BADGE RÉFÉRENCE (signature visuelle) ──────────────── */
+
+.ref-badge {
+    display: inline-block;
+    border: 1px solid #C8552B;
+    color: #C8552B;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1px;
+    padding: 4px 10px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+}
+
+/* ─── FORMULAIRES ────────────────────────────────────────── */
+
+input[type="text"],
+input[type="password"],
+input[type="file"],
+textarea,
+select {
+    width: 100%;
+    max-width: 480px;
+    padding: 12px 14px;
+    border: 1.5px solid #0B3D2E;
+    background-color: transparent;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    color: #1A1A1A;
+    margin-bottom: 4px;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    outline: none;
+    border-color: #C8552B;
+}
+
+button,
+input[type="submit"] {
+    background-color: #0B3D2E;
+    color: #F7F4EC;
+    border: none;
+    padding: 12px 24px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+button:hover {
+    background-color: #C8552B;
+}
+
+/* ─── CARTES (lois / décrets) ────────────────────────────── */
+
+.liste-lois,
+.liste-decrets {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.carte-loi {
+    background-color: #FFFFFF;
+    border: 1px solid rgba(11, 61, 46, 0.15);
+    border-left: 3px solid #C8552B;
+    padding: 16px 20px;
+    font-family: 'Newsreader', serif;
+    font-size: 17px;
+    color: #0B3D2E;
+    font-weight: 600;
+    transition: border-color 0.2s, background-color 0.2s;
+}
+
+.lien-loi:hover .carte-loi {
+    border-left-color: #0B3D2E;
+    background-color: #FBF9F2;
+}
+
+/* ─── PAGINATION ─────────────────────────────────────────── */
+
+.pagination {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 32px;
+    font-size: 14px;
+}
+
+.pagination span {
+    color: #1A1A1A;
+    opacity: 0.7;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+}
+
+/* ─── 404 ────────────────────────────────────────────────── */
+
+.error-404 {
+    text-align: center;
+    padding: 80px 40px;
+}
+
+.error-404 h1 {
+    font-family: 'Newsreader', serif;
+    font-size: 64px;
+    color: #C8552B;
+}
+/* ─── RESPONSIVE MOBILE ──────────────────────────────────── */
+
+@media (max-width: 768px) {
+
+    nav {
+        padding: 16px 20px;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    nav .menu {
+        gap: 16px;
+        font-size: 13px;
+    }
+
+    .hero {
+        padding: 32px 20px;
+    }
+
+    .hero h1 {
+        font-size: 26px;
+    }
+
+    input[type="text"],
+    input[type="password"],
+    input[type="file"],
+    textarea,
+    select {
+        max-width: 100%;
+    }
+
+    button,
+    input[type="submit"] {
+        width: 100%;
+    }
+
+    .carte-loi {
+        font-size: 15px;
+        padding: 14px 16px;
+    }
+
+    /* Compteurs accueil */
+    div[style*="display: flex"] {
+        flex-direction: column;
+    }
+
+    .pagination {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+}

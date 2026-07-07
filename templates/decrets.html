@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Décrets - JurisBenin</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+<nav>
+    <h2>JurisBenin</h2>
+    <div class="menu">
+    <a href="/">Accueil</a>
+    <a href="/lois">Lois</a>
+    <a href="/decrets">Décrets</a>
+    <a href="/recherche">Recherche</a>
+</div>
+</nav>
+
+<section class="hero">
+
+    <h1>Liste des décrets</h1>
+<form method="get" action="/decrets" style="margin-bottom: 20px; display: block; visibility: visible;">
+    <input type="text" name="recherche" value="{{ recherche }}" placeholder="Rechercher un décret...">
+    <select name="type">
+        <option value="">Tous les types</option>
+        <option value="Décret simple" {% if type == "Décret simple" %}selected{% endif %}>Décret simple</option>
+        <option value="Décret d'application" {% if type == "Décret d'application" %}selected{% endif %}>Décret d'application</option>
+        <option value="Décret-loi" {% if type == "Décret-loi" %}selected{% endif %}>Décret-loi</option>
+        <option value="Décret réglementaire" {% if type == "Décret réglementaire" %}selected{% endif %}>Décret réglementaire</option>
+        <option value="Décret individuel" {% if type == "Décret individuel" %}selected{% endif %}>Décret individuel</option>
+    </select>
+    <button type="submit">Rechercher</button>
+</form>
+    <div class="liste-lois">
+        {% for decret in decrets %}
+            <a href="/decret/{{ decret.id }}" class="lien-loi">
+                <div class="carte-loi">
+                    <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px;">
+                        <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #C8552B; font-weight: 500;">
+                            {{ "N° " + decret.numero if decret.numero else "N° " + decret.id|string }}
+                        </span>
+                        <span style="font-family: 'Inter', sans-serif; font-size: 12px; color: #1A1A1A; opacity: 0.5;">
+                            {{ decret.date }}
+                        </span>
+                    </div>
+                    <div>{{ decret.titre }}</div>
+                    {% if decret.categorie %}
+                    <div style="font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 400; color: #0B3D2E; opacity: 0.7; margin-top: 6px;">
+                        {{ decret.categorie }}
+                    </div>
+                    {% endif %}
+                </div>
+            </a>
+        {% endfor %}
+    </div>
+
+    <div class="pagination">
+        {% if page > 1 %}
+            <a href="/decrets?page={{ page - 1 }}&recherche={{ recherche }}&type={{ type }}">
+                <button type="button">&larr; Précédent</button>
+            </a>
+        {% endif %}
+
+        <span>Page {{ page }} / {{ total_pages }}</span>
+
+        {% if page < total_pages %}
+            <a href="/decrets?page={{ page + 1 }}&recherche={{ recherche }}&type={{ type }}">
+                <button type="button">Suivant &rarr;</button>
+            </a>
+        {% endif %}
+    </div>
+
+</section>
+</body>
+</html>

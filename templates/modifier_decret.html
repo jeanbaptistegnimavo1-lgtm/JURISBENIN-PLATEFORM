@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Modifier un décret - JurisBenin</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+<nav>
+    <h2>JurisBenin</h2>
+    <div class="menu">
+    <a href="/">Accueil</a>
+    <a href="/lois">Lois</a>
+    <a href="/decrets">Décrets</a>
+    <a href="/recherche">Recherche</a>
+</div>
+</nav>
+
+<section class="hero">
+
+    <h1>Modifier le décret</h1>
+
+    <form method="post" action="/modifier-decret/{{ id }}" enctype="multipart/form-data">
+
+        <input
+            type="text"
+            name="titre"
+            value="{{ titre }}"
+            placeholder="Titre du décret"
+            required
+        >
+
+        <br><br>
+
+        <select name="categorie">
+            <option value="">Type de décret</option>
+            <option value="Décret simple" {% if categorie == "Décret simple" %}selected{% endif %}>Décret simple</option>
+            <option value="Décret d'application" {% if categorie == "Décret d'application" %}selected{% endif %}>Décret d'application</option>
+            <option value="Décret-loi" {% if categorie == "Décret-loi" %}selected{% endif %}>Décret-loi</option>
+            <option value="Décret réglementaire" {% if categorie == "Décret réglementaire" %}selected{% endif %}>Décret réglementaire</option>
+            <option value="Décret individuel" {% if categorie == "Décret individuel" %}selected{% endif %}>Décret individuel</option>
+        </select>
+
+        <br><br>
+
+        <input
+            type="text"
+            name="numero"
+            value="{{ numero }}"
+            placeholder="Numéro officiel (ex: 2022-145)"
+        >
+
+        <br><br>
+
+        <input
+            type="text"
+            name="date"
+            value="{{ date }}"
+            placeholder="Date"
+            required
+        >
+
+        <br><br>
+
+        <textarea
+            name="contenu"
+            rows="10"
+            cols="60"
+            placeholder="Contenu du décret"
+        >{{ contenu }}</textarea>
+
+        <br><br>
+
+        <input type="file" name="pdf" accept=".pdf">
+
+        <br><br>
+
+        <button type="submit">Enregistrer les modifications</button>
+
+    </form>
+
+</section>
+
+</body>
+</html>

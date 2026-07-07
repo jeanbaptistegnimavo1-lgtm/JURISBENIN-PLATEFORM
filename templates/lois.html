@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Lois - JurisBenin</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+<nav>
+    <h2>JurisBenin</h2>
+    <div class="menu">
+    <a href="/">Accueil</a>
+    <a href="/lois">Lois</a>
+    <a href="/decrets">Décrets</a>
+    <a href="/recherche">Recherche</a>
+</div>
+</nav>
+
+<section class="hero">
+
+    <h1>Liste des lois</h1>
+
+    <form method="get" action="/lois">
+        <input
+            type="text"
+            name="recherche"
+            placeholder="Rechercher une loi..."
+            value="{{ recherche }}"
+        >
+        <br><br>
+        <select name="categorie">
+            <option value="">Toutes les catégories</option>
+            {% for cat in categories %}
+                <option value="{{ cat }}" {% if cat == categorie %}selected{% endif %}>
+                    {{ cat }}
+                </option>
+            {% endfor %}
+        </select>
+        <br><br>
+        <button type="submit">Rechercher</button>
+    </form>
+
+    <br>
+
+    <div class="liste-lois">
+        {% for loi in lois %}
+            <a href="/loi/{{ loi.id }}" class="lien-loi">
+                <div class="carte-loi">
+                    <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px;">
+                        <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #C8552B; font-weight: 500;">
+                            {{ "N° " + loi.numero if loi.numero else "N° " + loi.id|string }}
+                        </span>
+                        <span style="font-family: 'Inter', sans-serif; font-size: 12px; color: #1A1A1A; opacity: 0.5;">
+                            {{ loi.date }}
+                        </span>
+                    </div>
+                    <div>{{ loi.titre }}</div>
+                    {% if loi.categorie %}
+                    <div style="font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 400; color: #0B3D2E; opacity: 0.7; margin-top: 6px;">
+                        {{ loi.categorie }}
+                    </div>
+                    {% endif %}
+                </div>
+            </a>
+        {% endfor %}
+    </div>
+
+    <div class="pagination">
+        {% if page > 1 %}
+            <a href="/lois?recherche={{ recherche }}&categorie={{ categorie }}&page={{ page - 1 }}">
+                <button type="button">&larr; Précédent</button>
+            </a>
+        {% endif %}
+
+        <span>Page {{ page }} / {{ total_pages }}</span>
+
+        {% if page < total_pages %}
+            <a href="/lois?recherche={{ recherche }}&categorie={{ categorie }}&page={{ page + 1 }}">
+                <button type="button">Suivant &rarr;</button>
+            </a>
+        {% endif %}
+    </div>
+
+</section>
+</body>
+</html>

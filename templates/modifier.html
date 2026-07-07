@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Modifier une loi - JurisBenin</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+<nav>
+    <h2>JurisBenin</h2>
+    <div class="menu">
+    <a href="/">Accueil</a>
+    <a href="/lois">Lois</a>
+    <a href="/decrets">Décrets</a>
+    <a href="/recherche">Recherche</a>
+</div>
+</nav>
+
+<section class="hero">
+
+    <h1>Modifier la loi</h1>
+
+    <form method="post" action="/modifier/{{ id }}" enctype="multipart/form-data">
+
+        <input type="text" name="titre" value="{{ titre }}" placeholder="Titre de la loi" required>
+        <br><br>
+
+        <!-- TYPE -->
+        <select id="select_type" onchange="afficherAutre('select_type', 'autre_type')">
+            <option value="">Type de loi</option>
+            <option value="Loi" {% if type == "Loi" %}selected{% endif %}>Loi</option>
+            <option value="Loi organique" {% if type == "Loi organique" %}selected{% endif %}>Loi organique</option>
+            <option value="Code" {% if type == "Code" %}selected{% endif %}>Code</option>
+            <option value="Constitution" {% if type == "Constitution" %}selected{% endif %}>Constitution</option>
+            <option value="Ordonnance" {% if type == "Ordonnance" %}selected{% endif %}>Ordonnance</option>
+            <option value="Arrêté" {% if type == "Arrêté" %}selected{% endif %}>Arrêté</option>
+            <option value="Autre">Autre</option>
+        </select>
+        <input type="text" id="autre_type" name="type" value="{{ type }}" placeholder="Précisez le type..." style="display:none; margin-top: 10px;">
+        <br><br>
+
+        <!-- CATÉGORIE -->
+        <select id="select_categorie" onchange="afficherAutre('select_categorie', 'autre_categorie')">
+            <option value="">Catégorie juridique</option>
+            <option value="Droit constitutionnel" {% if categorie == "Droit constitutionnel" %}selected{% endif %}>Droit constitutionnel</option>
+            <option value="Droit pénal" {% if categorie == "Droit pénal" %}selected{% endif %}>Droit pénal</option>
+            <option value="Droit civil" {% if categorie == "Droit civil" %}selected{% endif %}>Droit civil</option>
+            <option value="Droit du travail" {% if categorie == "Droit du travail" %}selected{% endif %}>Droit du travail</option>
+            <option value="Droit foncier" {% if categorie == "Droit foncier" %}selected{% endif %}>Droit foncier</option>
+            <option value="Droit numérique" {% if categorie == "Droit numérique" %}selected{% endif %}>Droit numérique</option>
+            <option value="Droit administratif" {% if categorie == "Droit administratif" %}selected{% endif %}>Droit administratif</option>
+            <option value="Droit commercial" {% if categorie == "Droit commercial" %}selected{% endif %}>Droit commercial</option>
+            <option value="Droit fiscal" {% if categorie == "Droit fiscal" %}selected{% endif %}>Droit fiscal</option>
+            <option value="Droit de la famille" {% if categorie == "Droit de la famille" %}selected{% endif %}>Droit de la famille</option>
+            <option value="Autre">Autre</option>
+        </select>
+        <input type="text" id="autre_categorie" name="categorie" value="{{ categorie }}" placeholder="Précisez la catégorie..." style="display:none; margin-top: 10px;">
+        <br><br>
+
+        <input type="text" name="numero" value="{{ numero }}" placeholder="Numéro officiel (ex: 2019-40)">
+        <br><br>
+
+        <input type="text" name="date" value="{{ date }}" placeholder="Date" required>
+        <br><br>
+
+        <textarea name="contenu" rows="10" cols="60" placeholder="Contenu de la loi">{{ contenu }}</textarea>
+        <br><br>
+
+        {% if pdf %}
+        <p>PDF actuel : <a href="/static/pdf/{{ pdf }}" target="_blank">{{ pdf }}</a></p>
+        {% endif %}
+        <input type="file" name="pdf" accept=".pdf">
+        <br><br>
+
+        <button type="submit">Enregistrer les modifications</button>
+
+    </form>
+
+</section>
+
+<script>
+function afficherAutre(selectId, inputId) {
+    const select = document.getElementById(selectId);
+    const input = document.getElementById(inputId);
+    if (select.value === "Autre") {
+        input.style.display = "block";
+        input.required = true;
+    } else {
+        input.style.display = "none";
+        input.required = false;
+        input.value = select.value;
+    }
+}
+
+// Au chargement, si la valeur actuelle n'est pas dans la liste → afficher "Autre"
+document.addEventListener("DOMContentLoaded", function() {
+    ["select_type|autre_type", "select_categorie|autre_categorie"].forEach(pair => {
+        const [selectId, inputId] = pair.split("|");
+        const select = document.getElementById(selectId);
+        const input = document.getElementById(inputId);
+        const valeurActuelle = input.value;
+        const optionExiste = Array.from(select.options).some(o => o.value === valeurActuelle);
+        if (valeurActuelle && !optionExiste) {
+            select.value = "Autre";
+            input.style.display = "block";
+            input.required = true;
+        }
+    });
+});
+
+document.querySelectorAll("form").forEach(form => {
+    form.addEventListener("submit", function() {
+        document.querySelectorAll("select").forEach(select => {
+            if (select.value !== "Autre" && select.value !== "") {
+                const inputId = select.id.replace("select_", "autre_");
+                const input = document.getElementById(inputId);
+                if (input) input.value = select.value;
+            }
+        });
+    });
+});
+</script>
+
+</body>
+</html>

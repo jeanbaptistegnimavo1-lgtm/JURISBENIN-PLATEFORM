@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Administration - JurisBenin</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+<nav>
+    <h2>JurisBenin</h2>
+    <div class="menu">
+    <a href="/">Accueil</a>
+    <a href="/lois">Lois</a>
+    <a href="/decrets">Décrets</a>
+    <a href="/recherche">Recherche</a>
+</div>
+</nav>
+<section class="hero">
+<h1>Tableau de bord</h1>
+
+{% if message %}
+<div style="background-color: #d4edda; color: #155724; padding: 12px 20px; border-radius: 6px; margin-bottom: 20px;">
+    {{ message }}
+</div>
+{% endif %}
+
+<div class="carte-loi">
+    <h3>Statistiques</h3>
+    <p>Nombre de lois : {{ nb_lois }}</p>
+    <p>Nombre de décrets : {{ nb_decrets }}</p>
+    <p>Total des textes : {{ total }}</p>
+</div>
+<br>
+
+<h1>Ajouter une loi</h1>
+<form method="post" action="/admin" enctype="multipart/form-data">
+    <input type="text" name="titre" placeholder="Titre de la loi">
+    <br><br>
+
+    <!-- TYPE -->
+    <select id="select_type" onchange="afficherAutre('select_type', 'autre_type')">
+        <option value="">Type de loi</option>
+        <option value="Loi">Loi</option>
+        <option value="Loi organique">Loi organique</option>
+        <option value="Code">Code</option>
+        <option value="Constitution">Constitution</option>
+        <option value="Ordonnance">Ordonnance</option>
+        <option value="Arrêté">Arrêté</option>
+        <option value="Autre">Autre</option>
+    </select>
+    <input type="text" id="autre_type" name="type" placeholder="Précisez le type..." style="display:none; margin-top: 10px;">
+    <br><br>
+
+    <!-- CATÉGORIE -->
+    <select id="select_categorie" onchange="afficherAutre('select_categorie', 'autre_categorie')">
+        <option value="">Catégorie juridique</option>
+        <option value="Droit constitutionnel">Droit constitutionnel</option>
+        <option value="Droit pénal">Droit pénal</option>
+        <option value="Droit civil">Droit civil</option>
+        <option value="Droit du travail">Droit du travail</option>
+        <option value="Droit foncier">Droit foncier</option>
+        <option value="Droit numérique">Droit numérique</option>
+        <option value="Droit administratif">Droit administratif</option>
+        <option value="Droit commercial">Droit commercial</option>
+        <option value="Droit fiscal">Droit fiscal</option>
+        <option value="Droit de la famille">Droit de la famille</option>
+        <option value="Autre">Autre</option>
+    </select>
+    <input type="text" id="autre_categorie" name="categorie" placeholder="Précisez la catégorie..." style="display:none; margin-top: 10px;">
+    <br><br>
+
+    <input type="text" name="numero" placeholder="Numéro officiel (ex: 2019-40)">
+    <br><br>
+    <input type="text" name="date" placeholder="Date">
+    <br><br>
+    <textarea name="contenu" rows="10" cols="60" placeholder="Contenu de la loi"></textarea>
+    <br><br>
+    <input type="file" name="pdf" accept=".pdf">
+    <br><br>
+    <button type="submit">Ajouter la loi</button>
+</form>
+
+<br><br>
+<hr>
+
+<h1>Ajouter un décret</h1>
+<form method="post" action="/admin/decret" enctype="multipart/form-data">
+    <input type="text" name="titre" placeholder="Titre du décret">
+    <br><br>
+    <select id="select_decret" onchange="afficherAutre('select_decret', 'autre_decret')">
+        <option value="">Type de décret</option>
+        <option value="Décret simple">Décret simple</option>
+        <option value="Décret d'application">Décret d'application</option>
+        <option value="Décret-loi">Décret-loi</option>
+        <option value="Décret réglementaire">Décret réglementaire</option>
+        <option value="Décret individuel">Décret individuel</option>
+        <option value="Autre">Autre</option>
+    </select>
+    <input type="text" id="autre_decret" name="categorie" placeholder="Précisez le type..." style="display:none; margin-top: 10px;">
+    <br><br>
+    <input type="text" name="numero" placeholder="Numéro officiel (ex: 2022-145)">
+    <br><br>
+    <input type="text" name="date" placeholder="Date">
+    <br><br>
+    <textarea name="contenu" rows="10" cols="60" placeholder="Contenu du décret"></textarea>
+    <br><br>
+    <input type="file" name="pdf" accept=".pdf">
+    <br><br>
+    <button type="submit">Ajouter le décret</button>
+</form>
+
+<br><br>
+<hr>
+
+<h1>Gestion des lois</h1>
+<ul>
+{% for loi in lois %}
+<li>
+    {{ loi["titre"] }}
+    <a href="/modifier/{{ loi['id'] }}">Modifier</a>
+    |
+    <a href="/supprimer/{{ loi['id'] }}"
+       onclick="return confirm('Supprimer cette loi ?')">Supprimer</a>
+</li>
+{% endfor %}
+</ul>
+
+<hr>
+
+<h1>Gestion des décrets</h1>
+<ul>
+{% for decret in decrets %}
+<li>
+    {{ decret["titre"] }}
+    <a href="/modifier-decret/{{ decret['id'] }}">Modifier</a>
+    |
+    <a href="/supprimer-decret/{{ decret['id'] }}"
+       onclick="return confirm('Supprimer ce décret ?')">Supprimer</a>
+</li>
+{% endfor %}
+</ul>
+
+<a href="/logout">
+    <button type="button">Déconnexion</button>
+</a>
+
+</section>
+
+<script>
+function afficherAutre(selectId, inputId) {
+    const select = document.getElementById(selectId);
+    const input = document.getElementById(inputId);
+    if (select.value === "Autre") {
+        input.style.display = "block";
+        input.required = true;
+    } else {
+        input.style.display = "none";
+        input.required = false;
+        // Quand une option normale est choisie, on met sa valeur dans l'input caché
+        input.value = select.value;
+    }
+}
+
+// Au submit, s'assurer que les valeurs des selects sont bien envoyées
+document.querySelectorAll("form").forEach(form => {
+    form.addEventListener("submit", function() {
+        document.querySelectorAll("select").forEach(select => {
+            if (select.value !== "Autre" && select.value !== "") {
+                const inputId = select.id.replace("select_", "autre_");
+                const input = document.getElementById(inputId);
+                if (input) input.value = select.value;
+            }
+        });
+    });
+});
+</script>
+
+</body>
+</html>

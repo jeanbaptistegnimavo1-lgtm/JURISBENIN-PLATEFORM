@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Recherche avancée - JurisBenin</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+<nav>
+    <h2>JurisBenin</h2>
+    <div class="menu">
+    <a href="/">Accueil</a>
+    <a href="/lois">Lois</a>
+    <a href="/decrets">Décrets</a>
+    <a href="/recherche">Recherche</a>
+</div>
+</nav>
+
+<section class="hero">
+
+    <div class="ref-badge">Recherche avancée</div>
+    <h1>Rechercher un texte</h1>
+
+    <form method="get" action="/recherche">
+
+        <input
+            type="text"
+            name="q"
+            value="{{ q }}"
+            placeholder="Mots-clés (titre ou contenu)..."
+        >
+        <br><br>
+
+        <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+
+            <div style="flex: 1; min-width: 200px;">
+                <select name="nature">
+                    <option value="">Toutes les natures</option>
+                    {% for n in natures %}
+                        <option value="{{ n }}" {% if n == nature %}selected{% endif %}>{{ n }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div style="flex: 1; min-width: 200px;">
+                <select name="categorie">
+                    <option value="">Toutes les catégories</option>
+                    {% for cat in categories %}
+                        <option value="{{ cat }}" {% if cat == categorie %}selected{% endif %}>{{ cat }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+        </div>
+        <br>
+
+        <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+
+            <div style="flex: 1; min-width: 200px;">
+                <input
+                    type="text"
+                    name="numero"
+                    value="{{ numero }}"
+                    placeholder="Numéro officiel (ex: 2019-40)"
+                >
+            </div>
+
+            <div style="flex: 1; min-width: 200px;">
+                <input
+                    type="text"
+                    name="date_debut"
+                    value="{{ date_debut }}"
+                    placeholder="Date début (ex: 2010)"
+                >
+            </div>
+
+            <div style="flex: 1; min-width: 200px;">
+                <input
+                    type="text"
+                    name="date_fin"
+                    value="{{ date_fin }}"
+                    placeholder="Date fin (ex: 2024)"
+                >
+            </div>
+
+        </div>
+        <br>
+
+        <div style="display: flex; gap: 12px;">
+            <button type="submit">Rechercher</button>
+            <a href="/recherche">
+                <button type="button" style="background-color: transparent; color: #0B3D2E; border: 1.5px solid #0B3D2E;">
+                    Réinitialiser
+                </button>
+            </a>
+        </div>
+
+    </form>
+
+    <br>
+
+    {% if total is defined %}
+    <p style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #1A1A1A; opacity: 0.6; margin-bottom: 16px;">
+        {{ total }} résultat{{ "s" if total > 1 else "" }} trouvé{{ "s" if total > 1 else "" }}
+    </p>
+    {% endif %}
+
+    <div class="liste-lois">
+        {% for texte in resultats %}
+            <a href="/{{ 'decret' if texte.nature == 'Décret' else 'loi' }}/{{ texte.id }}" class="lien-loi">
+                <div class="carte-loi">
+                    <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px;">
+                        <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #C8552B; font-weight: 500;">
+                            {{ "N° " + texte.numero if texte.numero else "N° " + texte.id|string }} — {{ texte.nature }}
+                        </span>
+                        <span style="font-family: 'Inter', sans-serif; font-size: 12px; color: #1A1A1A; opacity: 0.5;">
+                            {{ texte.date }}
+                        </span>
+                    </div>
+                    <div>{{ texte.titre }}</div>
+                    {% if texte.categorie %}
+                    <div style="font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 400; color: #0B3D2E; opacity: 0.7; margin-top: 6px;">
+                        {{ texte.categorie }}
+                    </div>
+                    {% endif %}
+                </div>
+            </a>
+        {% endfor %}
+    </div>
+
+    {% if resultats %}
+    <div class="pagination">
+        {% if page > 1 %}
+            <a href="/recherche?q={{ q }}&nature={{ nature }}&categorie={{ categorie }}&numero={{ numero }}&date_debut={{ date_debut }}&date_fin={{ date_fin }}&page={{ page - 1 }}">
+                <button type="button">&larr; Précédent</button>
+            </a>
+        {% endif %}
+
+        <span>Page {{ page }} / {{ total_pages }}</span>
+
+        {% if page < total_pages %}
+            <a href="/recherche?q={{ q }}&nature={{ nature }}&categorie={{ categorie }}&numero={{ numero }}&date_debut={{ date_debut }}&date_fin={{ date_fin }}&page={{ page + 1 }}">
+                <button type="button">Suivant &rarr;</button>
+            </a>
+        {% endif %}
+    </div>
+    {% endif %}
+
+</section>
+</body>
+</html>
