@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Modifier une décision - JurisBenin</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+<nav>
+    <h2>JurisBenin</h2>
+    <div class="menu">
+        <a href="/">Accueil</a>
+        <a href="/lois">Lois</a>
+        <a href="/decrets">Décrets</a>
+        <a href="/jurisprudences">Jurisprudence</a>
+        <a href="/recherche">Recherche</a>
+    </div>
+</nav>
+
+<section class="hero">
+
+    <div class="ref-badge">Modification</div>
+    <h1>Modifier la décision</h1>
+
+    <form method="post" action="/modifier-jurisprudence/{{ juris.id }}" enctype="multipart/form-data">
+
+        <input
+            type="text"
+            name="titre"
+            value="{{ juris.titre }}"
+            placeholder="Titre de la décision"
+            required
+        >
+        <br><br>
+
+        <select name="juridiction" required>
+            <option value="">Choisir la juridiction</option>
+            <option value="Cour constitutionnelle" {% if juris.juridiction == "Cour constitutionnelle" %}selected{% endif %}>Cour constitutionnelle</option>
+            <option value="Cour Suprême" {% if juris.juridiction == "Cour Suprême" %}selected{% endif %}>Cour Suprême</option>
+            <option value="CRIET" {% if juris.juridiction == "CRIET" %}selected{% endif %}>CRIET</option>
+            <option value="Tribunal" {% if juris.juridiction == "Tribunal" %}selected{% endif %}>Tribunal</option>
+        </select>
+        <br><br>
+
+        <input
+            type="text"
+            name="chambre"
+            value="{{ juris.chambre }}"
+            placeholder="Chambre (ex: Chambre civile)"
+        >
+        <br><br>
+
+        <input
+            type="text"
+            name="numero_affaire"
+            value="{{ juris.numero_affaire }}"
+            placeholder="Numéro d'affaire (ex: DCC 21-001)"
+        >
+        <br><br>
+
+        <input
+            type="text"
+            name="date"
+            value="{{ juris.date }}"
+            placeholder="Date de la décision"
+            required
+        >
+        <br><br>
+
+        <input
+            type="text"
+            name="parties"
+            value="{{ juris.parties }}"
+            placeholder="Parties (ex: Dupont vs État du Bénin)"
+        >
+        <br><br>
+
+        <input
+            type="text"
+            name="matiere"
+            value="{{ juris.matiere }}"
+            placeholder="Matière juridique (ex: Droit du travail)"
+        >
+        <br><br>
+
+        <textarea
+            name="resume"
+            rows="4"
+            placeholder="Résumé de la décision"
+        >{{ juris.resume }}</textarea>
+        <br><br>
+
+        <textarea
+            name="decision"
+            rows="10"
+            placeholder="Dispositif complet de la décision"
+            required
+        >{{ juris.decision }}</textarea>
+        <br><br>
+
+        <input
+            type="text"
+            name="textes_cites"
+            value="{{ juris.textes_cites }}"
+            placeholder="IDs des textes cités (ex: 1,3,5)"
+        >
+        <br><br>
+
+        <input type="file" name="pdf" accept=".pdf">
+        <br><br>
+
+        <button type="submit">Enregistrer les modifications</button>
+
+    </form>
+
+</section>
+</body>
+</html>

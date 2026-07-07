@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Jurisprudence - JurisBenin</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+<nav>
+    <h2>JurisBenin</h2>
+    <div class="menu">
+        <a href="/">Accueil</a>
+        <a href="/lois">Lois</a>
+        <a href="/decrets">Décrets</a>
+        <a href="/jurisprudences">Jurisprudence</a>
+        <a href="/recherche">Recherche</a>
+    </div>
+</nav>
+
+<section class="hero">
+
+    <div class="ref-badge">Phase 3 — Jurisprudence</div>
+    <h1>Décisions de justice</h1>
+
+    <form method="get" action="/jurisprudences">
+
+        <input
+            type="text"
+            name="recherche"
+            value="{{ recherche }}"
+            placeholder="Rechercher une décision, des parties, une matière..."
+        >
+        <br><br>
+
+        <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 200px;">
+                <select name="juridiction">
+                    <option value="">Toutes les juridictions</option>
+                    {% for j in juridictions %}
+                        <option value="{{ j }}" {% if j == juridiction %}selected{% endif %}>{{ j }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div style="flex: 1; min-width: 200px;">
+                <select name="matiere">
+                    <option value="">Toutes les matières</option>
+                    {% for m in matieres %}
+                        <option value="{{ m }}" {% if m == matiere %}selected{% endif %}>{{ m }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <br>
+
+        <div style="display: flex; gap: 12px;">
+            <button type="submit">Rechercher</button>
+            <a href="/jurisprudences">
+                <button type="button" style="background-color: transparent; color: #0B3D2E; border: 1.5px solid #0B3D2E;">
+                    Réinitialiser
+                </button>
+            </a>
+        </div>
+
+    </form>
+
+    <br>
+
+    <p style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #1A1A1A; opacity: 0.6; margin-bottom: 16px;">
+        {{ total }} décision{{ "s" if total > 1 else "" }} trouvée{{ "s" if total > 1 else "" }}
+    </p>
+
+    <div class="liste-lois">
+        {% for j in jurisprudences %}
+            <a href="/jurisprudence/{{ j.id }}" class="lien-loi">
+                <div class="carte-loi">
+                    <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px;">
+                        <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #C8552B; font-weight: 500;">
+                            {{ j.juridiction }}{% if j.numero_affaire %} — {{ j.numero_affaire }}{% endif %}
+                        </span>
+                        <span style="font-family: 'Inter', sans-serif; font-size: 12px; color: #1A1A1A; opacity: 0.5;">
+                            {{ j.date }}
+                        </span>
+                    </div>
+                    <div>{{ j.titre }}</div>
+                    {% if j.parties %}
+                    <div style="font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 400; color: #1A1A1A; opacity: 0.6; margin-top: 4px;">
+                        {{ j.parties }}
+                    </div>
+                    {% endif %}
+                    {% if j.matiere %}
+                    <div style="font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 400; color: #0B3D2E; opacity: 0.7; margin-top: 4px;">
+                        {{ j.matiere }}
+                    </div>
+                    {% endif %}
+                </div>
+            </a>
+        {% endfor %}
+
+        {% if total == 0 %}
+        <p style="opacity: 0.6; font-size: 15px;">Aucune décision trouvée. Ajoutez-en depuis l'espace admin.</p>
+        {% endif %}
+    </div>
+
+    {% if total > 0 %}
+    <div class="pagination">
+        {% if page > 1 %}
+            <a href="/jurisprudences?recherche={{ recherche }}&juridiction={{ juridiction }}&matiere={{ matiere }}&page={{ page - 1 }}">
+                <button type="button">&larr; Précédent</button>
+            </a>
+        {% endif %}
+        <span>Page {{ page }} / {{ total_pages }}</span>
+        {% if page < total_pages %}
+            <a href="/jurisprudences?recherche={{ recherche }}&juridiction={{ juridiction }}&matiere={{ matiere }}&page={{ page + 1 }}">
+                <button type="button">Suivant &rarr;</button>
+            </a>
+        {% endif %}
+    </div>
+    {% endif %}
+
+</section>
+</body>
+</html>

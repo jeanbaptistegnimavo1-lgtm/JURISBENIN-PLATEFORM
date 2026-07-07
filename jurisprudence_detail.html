@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ juris.titre }} - JurisBenin</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+<nav>
+    <h2>JurisBenin</h2>
+    <div class="menu">
+        <a href="/">Accueil</a>
+        <a href="/lois">Lois</a>
+        <a href="/decrets">Décrets</a>
+        <a href="/jurisprudences">Jurisprudence</a>
+        <a href="/recherche">Recherche</a>
+    </div>
+</nav>
+
+<section class="hero">
+
+    <div class="ref-badge">
+        {{ juris.juridiction }}{% if juris.numero_affaire %} — {{ juris.numero_affaire }}{% endif %}
+    </div>
+
+    <h1>{{ juris.titre }}</h1>
+
+    <p><strong>Date :</strong> {{ juris.date }}</p>
+    {% if juris.chambre %}
+    <p><strong>Chambre :</strong> {{ juris.chambre }}</p>
+    {% endif %}
+    {% if juris.parties %}
+    <p><strong>Parties :</strong> {{ juris.parties }}</p>
+    {% endif %}
+    {% if juris.matiere %}
+    <p><strong>Matière :</strong> {{ juris.matiere }}</p>
+    {% endif %}
+
+    <br>
+
+    {% if juris.resume %}
+    <div style="background: #F0EDE4; border-left: 3px solid #0B3D2E; padding: 16px 20px; margin-bottom: 24px;">
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #C8552B; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;">Résumé</div>
+        <p style="font-size: 15px; line-height: 1.7;">{{ juris.resume }}</p>
+    </div>
+    {% endif %}
+
+    <div class="carte-loi" style="font-family: 'Inter', sans-serif; font-weight: 400; font-size: 15px; padding: 24px;">
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #C8552B; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px;">Dispositif</div>
+        {{ juris.decision }}
+    </div>
+
+    {% if juris.pdf %}
+    <br>
+    <a href="/static/pdf/{{ juris.pdf }}" target="_blank" download>
+        <button>Télécharger le PDF</button>
+    </a>
+    {% endif %}
+
+    {% if textes_cites %}
+    <div style="margin-top: 40px; border-top: 1px solid rgba(11,61,46,0.15); padding-top: 28px;">
+        <div class="ref-badge">Textes cités</div>
+        <h3 style="font-family: 'Newsreader', serif; color: #0B3D2E; margin: 12px 0 16px;">Textes de loi applicables</h3>
+        <div class="liste-lois">
+            {% for texte in textes_cites %}
+                <a href="/{{ 'decret' if texte.nature == 'Décret' else 'loi' }}/{{ texte.id }}" class="lien-loi">
+                    <div class="carte-loi">
+                        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px;">
+                            <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #C8552B; font-weight: 500;">
+                                {{ "N° " + texte.numero if texte.numero else "N° " + texte.id|string }} — {{ texte.nature }}
+                            </span>
+                            <span style="font-family: 'Inter', sans-serif; font-size: 12px; color: #1A1A1A; opacity: 0.5;">
+                                {{ texte.date }}
+                            </span>
+                        </div>
+                        <div>{{ texte.titre }}</div>
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    {% if admin %}
+    <br><br>
+    <div style="display: flex; gap: 12px;">
+        <a href="/modifier-jurisprudence/{{ juris.id }}">
+            <button>Modifier cette décision</button>
+        </a>
+        <a href="/supprimer-jurisprudence/{{ juris.id }}"
+           onclick="return confirm('Supprimer cette décision ?')">
+            <button style="background-color: #791F1F;">Supprimer</button>
+        </a>
+    </div>
+    {% endif %}
+
+    {% if similaires %}
+    <div style="margin-top: 48px; border-top: 1px solid rgba(11,61,46,0.15); padding-top: 32px;">
+        <div class="ref-badge">Décisions similaires</div>
+        <h3 style="font-family: 'Newsreader', serif; color: #0B3D2E; margin: 12px 0 16px;">Vous pourriez aussi consulter</h3>
+        <div class="liste-lois">
+            {% for s in similaires %}
+                <a href="/jurisprudence/{{ s.id }}" class="lien-loi">
+                    <div class="carte-loi">
+                        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px;">
+                            <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #C8552B; font-weight: 500;">
+                                {{ s.juridiction }}{% if s.numero_affaire %} — {{ s.numero_affaire }}{% endif %}
+                            </span>
+                            <span style="font-family: 'Inter', sans-serif; font-size: 12px; color: #1A1A1A; opacity: 0.5;">
+                                {{ s.date }}
+                            </span>
+                        </div>
+                        <div>{{ s.titre }}</div>
+                        {% if s.matiere %}
+                        <div style="font-family: 'Inter', sans-serif; font-size: 12px; color: #0B3D2E; opacity: 0.7; margin-top: 4px;">
+                            {{ s.matiere }}
+                        </div>
+                        {% endif %}
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+</section>
+</body>
+</html>

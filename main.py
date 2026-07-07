@@ -561,7 +561,261 @@ def supprimer_decret(request: Request, id: int):
 
     request.session["message"] = "Décret supprimé ✅"
     return RedirectResponse(url="/admin", status_code=303)
+# ─── JURISPRUDENCE ───────────────────────────────────────────────────────
 
+@app.get("/jurisprudences", response_class=HTMLResponse)
+def jurisprudences(
+    request: Request,
+    recherche: str = "",
+    juridiction: str = "",
+    matiere: str = "",
+    page: int = 1
+):
+    par_page = 10
+    offset = (page - 1) * par_page
+
+    connexion = sqlite3.connect("jurisbenin.db")
+    connexion.row_factory = sqlite3.Row
+    curseur = connexion.cursor()
+
+    # Listes pour les filtres
+    juridictions = curseur.execute(
+        "SELECT DISTINCT juridiction FROM jurisprudences ORDER BY juridiction"
+    ).fetchall()
+    juridictions = [j["juridiction"] for j in juridictions]
+
+    matieres = curseur.execute(
+        "SELECT DISTINCT matiere FROM jurisprudences WHERE matiere != '' ORDER BY matiere"
+    ).fetchall()
+    matieres = [m["matiere"] for m in matieres]
+
+    # Construction de la requête
+    conditions = ["1=1"]
+    params = []
+
+    if recherche:
+        conditions.append("(titre LIKE ? OR resume LIKE ? OR decision LIKE ? OR parties LIKE ?)")
+        params.extend([f"%{recherche}%"] * 4)
+
+    if juridiction:
+        conditions.append("juridiction = ?")
+        params.append(juridiction)
+
+    if matiere:
+        conditions.append("matiere = ?")
+        params.append(matiere)
+
+    where = "WHERE " + " AND ".join(conditions)
+
+    total = curseur.execute(
+        f"SELECT COUNT(*) FROM jurisprudences {where}", params
+    ).fetchone()[0]
+
+    total_pages = max(1, (total + par_page - 1) // par_page)
+
+    resultats = curseur.execute(
+        f"SELECT * FROM jurisprudences {where} ORDER BY date DESC LIMIT ? OFFSET ?",
+        params + [par_page, offset]
+    ).fetchall()
+
+    connexion.close()
+
+    return templates.TemplateResponse(
+        request=request,
+        name="jurisprudences.html",
+        context={
+            "jurisprudences": resultats,
+            "recherche": recherche,
+            "juridiction": juridiction,
+            "matiere": matiere,
+            "juridictions": juridictions,
+            "matieres": matieres,
+            "page": page,
+            "total_pages": total_pages,
+            "total": total
+        }
+    )
+
+
+@app.get("/jurisprudence/{id}", response_class=HTMLResponse)
+def jurisprudence_detail(request: Request, id: int):
+    connexion = sqlite3.connect("jurisbenin.db")
+    connexion.row_factory = sqlite3.Row
+    curseur = connexion.cursor()
+
+    curseur.execute("SELECT * FROM jurisprudences WHERE id = ?", (id,))
+    juris = curseur.fetchone()
+
+    if juris is None:
+        connexion.close()
+        return templates.TemplateResponse(
+            request=request,
+            name="404.html",
+            context={},
+            status_code=404
+        )
+
+    # Textes de lois cités (IDs séparés par des virgules)
+    textes_cites = []
+    if juris["textes_cites"]:
+        ids = [i.strip() for i in juris["textes_cites"].split(",") if i.strip().isdigit()]
+        if ids:
+            placeholders = ",".join("?" * len(ids))
+            textes_cites = curseur.execute(
+                f"SELECT * FROM textes WHERE id IN ({placeholders})", ids
+            ).fetchall()
+
+    # Décisions similaires (même juridiction ou même matière)
+    similaires = curseur.execute(
+        """
+        SELECT * FROM jurisprudences
+        WHERE id != ?
+        AND (juridiction = ? OR (matiere = ? AND matiere != ''))
+        ORDER BY RANDOM()
+        LIMIT 3
+        """,
+        (id, juris["juridiction"], juris["matiere"])
+    ).fetchall()
+
+    connexion.close()
+
+    return templates.TemplateResponse(
+        request=request,
+        name="jurisprudence_detail.html",
+        context={
+            "juris": juris,
+            "textes_cites": textes_cites,
+            "similaires": similaires,
+            "admin": request.session.get("admin")
+        }
+    )
+
+
+@app.post("/admin/jurisprudence")
+def ajouter_jurisprudence(
+    request: Request,
+    titre: str = Form(...),
+    juridiction: str = Form(...),
+    chambre: str = Form(""),
+    numero_affaire: str = Form(""),
+    date: str = Form(...),
+    parties: str = Form(""),
+    matiere: str = Form(""),
+    resume: str = Form(""),
+    decision: str = Form(...),
+    textes_cites: str = Form(""),
+    pdf: UploadFile = File(None)
+):
+    if not request.session.get("admin"):
+        return RedirectResponse(url="/login", status_code=303)
+
+    nom_pdf = None
+    if pdf and pdf.filename:
+        nom_pdf = pdf.filename
+        with open(f"static/pdf/{nom_pdf}", "wb") as buffer:
+            shutil.copyfileobj(pdf.file, buffer)
+
+    connexion = sqlite3.connect("jurisbenin.db")
+    curseur = connexion.cursor()
+    curseur.execute(
+        """
+        INSERT INTO jurisprudences
+        (titre, juridiction, chambre, numero_affaire, date, parties, matiere, resume, decision, textes_cites, pdf)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """,
+        (titre, juridiction, chambre, numero_affaire, date, parties, matiere, resume, decision, textes_cites, nom_pdf)
+    )
+    connexion.commit()
+    connexion.close()
+
+    return RedirectResponse(url="/jurisprudences", status_code=303)
+
+
+@app.get("/modifier-jurisprudence/{id}", response_class=HTMLResponse)
+def modifier_jurisprudence(request: Request, id: int):
+    if not request.session.get("admin"):
+        return RedirectResponse(url="/login", status_code=303)
+
+    connexion = sqlite3.connect("jurisbenin.db")
+    connexion.row_factory = sqlite3.Row
+    curseur = connexion.cursor()
+    curseur.execute("SELECT * FROM jurisprudences WHERE id = ?", (id,))
+    juris = curseur.fetchone()
+    connexion.close()
+
+    if juris is None:
+        return templates.TemplateResponse(
+            request=request, name="404.html", context={}, status_code=404
+        )
+
+    return templates.TemplateResponse(
+        request=request,
+        name="modifier_jurisprudence.html",
+        context={"juris": juris}
+    )
+
+
+@app.post("/modifier-jurisprudence/{id}")
+def enregistrer_modification_jurisprudence(
+    request: Request,
+    id: int,
+    titre: str = Form(...),
+    juridiction: str = Form(...),
+    chambre: str = Form(""),
+    numero_affaire: str = Form(""),
+    date: str = Form(...),
+    parties: str = Form(""),
+    matiere: str = Form(""),
+    resume: str = Form(""),
+    decision: str = Form(...),
+    textes_cites: str = Form(""),
+    pdf: UploadFile = File(None)
+):
+    if not request.session.get("admin"):
+        return RedirectResponse(url="/login", status_code=303)
+
+    connexion = sqlite3.connect("jurisbenin.db")
+    connexion.row_factory = sqlite3.Row
+    curseur = connexion.cursor()
+
+    nom_pdf = curseur.execute(
+        "SELECT pdf FROM jurisprudences WHERE id = ?", (id,)
+    ).fetchone()["pdf"]
+
+    if pdf and pdf.filename:
+        nom_pdf = pdf.filename
+        with open(f"static/pdf/{nom_pdf}", "wb") as buffer:
+            shutil.copyfileobj(pdf.file, buffer)
+
+    curseur.execute(
+        """
+        UPDATE jurisprudences
+        SET titre = ?, juridiction = ?, chambre = ?, numero_affaire = ?,
+            date = ?, parties = ?, matiere = ?, resume = ?,
+            decision = ?, textes_cites = ?, pdf = ?
+        WHERE id = ?
+        """,
+        (titre, juridiction, chambre, numero_affaire, date, parties,
+         matiere, resume, decision, textes_cites, nom_pdf, id)
+    )
+    connexion.commit()
+    connexion.close()
+
+    return RedirectResponse(url=f"/jurisprudence/{id}", status_code=303)
+
+
+@app.get("/supprimer-jurisprudence/{id}")
+def supprimer_jurisprudence(request: Request, id: int):
+    if not request.session.get("admin"):
+        return RedirectResponse(url="/login", status_code=303)
+
+    connexion = sqlite3.connect("jurisbenin.db")
+    curseur = connexion.cursor()
+    curseur.execute("DELETE FROM jurisprudences WHERE id = ?", (id,))
+    connexion.commit()
+    connexion.close()
+
+    return RedirectResponse(url="/jurisprudences", status_code=303)
 # ─── RECHERCHE AVANCÉE ───────────────────────────────────────────────────
 
 @app.get("/recherche", response_class=HTMLResponse)

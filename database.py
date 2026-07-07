@@ -100,7 +100,22 @@ if curseur.execute("SELECT COUNT(*) FROM decrets").fetchone()[0] == 0:
     INSERT INTO decrets (titre, date, contenu)
     VALUES (?, ?, ?)
     """, decrets_exemples)
-
+curseur.execute("""
+CREATE TABLE IF NOT EXISTS jurisprudences (
+    id              INTEGER PRIMARY KEY AUTOINCREMENT,
+    titre           TEXT NOT NULL,
+    juridiction     TEXT NOT NULL,
+    chambre         TEXT DEFAULT '',
+    numero_affaire  TEXT DEFAULT '',
+    date            TEXT NOT NULL,
+    parties         TEXT DEFAULT '',
+    matiere         TEXT DEFAULT '',
+    resume          TEXT DEFAULT '',
+    decision        TEXT DEFAULT '',
+    textes_cites    TEXT DEFAULT '',
+    pdf             TEXT
+)
+""")
 connexion.commit()
 connexion.close()
 
