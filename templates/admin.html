@@ -9,140 +9,210 @@
 <nav>
     <h2>JurisBenin</h2>
     <div class="menu">
-    <a href="/">Accueil</a>
-    <a href="/lois">Lois</a>
-    <a href="/decrets">Décrets</a>
-    <a href="/recherche">Recherche</a>
-</div>
+        <a href="/">Accueil</a>
+        <a href="/lois">Lois</a>
+        <a href="/decrets">Décrets</a>
+        <a href="/jurisprudences">Jurisprudence</a>
+        <a href="/recherche">Recherche</a>
+    </div>
 </nav>
-<section class="hero">
-<h1>Tableau de bord</h1>
 
-{% if message %}
-<div style="background-color: #d4edda; color: #155724; padding: 12px 20px; border-radius: 6px; margin-bottom: 20px;">
-    {{ message }}
-</div>
-{% endif %}
+<section class="hero" style="max-width: 900px;">
 
-<div class="carte-loi">
-    <h3>Statistiques</h3>
-    <p>Nombre de lois : {{ nb_lois }}</p>
-    <p>Nombre de décrets : {{ nb_decrets }}</p>
-    <p>Total des textes : {{ total }}</p>
-</div>
-<br>
+    <div class="ref-badge">Espace administrateur</div>
+    <h1>Tableau de bord</h1>
 
-<h1>Ajouter une loi</h1>
-<form method="post" action="/admin" enctype="multipart/form-data">
-    <input type="text" name="titre" placeholder="Titre de la loi">
-    <br><br>
+    {% if message %}
+    <div style="background-color: #d4edda; color: #155724; padding: 12px 20px; margin-bottom: 20px;">
+        {{ message }}
+    </div>
+    {% endif %}
 
-    <!-- TYPE -->
-    <select id="select_type" onchange="afficherAutre('select_type', 'autre_type')">
-        <option value="">Type de loi</option>
-        <option value="Loi">Loi</option>
-        <option value="Loi organique">Loi organique</option>
-        <option value="Code">Code</option>
-        <option value="Constitution">Constitution</option>
-        <option value="Ordonnance">Ordonnance</option>
-        <option value="Arrêté">Arrêté</option>
-        <option value="Autre">Autre</option>
-    </select>
-    <input type="text" id="autre_type" name="type" placeholder="Précisez le type..." style="display:none; margin-top: 10px;">
-    <br><br>
+    <div style="display: flex; gap: 16px; margin-bottom: 32px;">
+        <div class="carte-loi" style="flex: 1; font-family: 'Inter', sans-serif; font-weight: 400; text-align: center; border-left: none; border-top: 3px solid #C8552B;">
+            <div style="font-family: 'Newsreader', serif; font-size: 32px; font-weight: 600; color: #0B3D2E;">{{ nb_lois }}</div>
+            <div style="font-size: 13px; opacity: 0.7;">Lois</div>
+        </div>
+        <div class="carte-loi" style="flex: 1; font-family: 'Inter', sans-serif; font-weight: 400; text-align: center; border-left: none; border-top: 3px solid #C8552B;">
+            <div style="font-family: 'Newsreader', serif; font-size: 32px; font-weight: 600; color: #0B3D2E;">{{ nb_decrets }}</div>
+            <div style="font-size: 13px; opacity: 0.7;">Décrets</div>
+        </div>
+        <div class="carte-loi" style="flex: 1; font-family: 'Inter', sans-serif; font-weight: 400; text-align: center; border-left: none; border-top: 3px solid #C8552B;">
+            <div style="font-family: 'Newsreader', serif; font-size: 32px; font-weight: 600; color: #0B3D2E;">{{ nb_jurisprudences }}</div>
+            <div style="font-size: 13px; opacity: 0.7;">Décisions</div>
+        </div>
+        <div class="carte-loi" style="flex: 1; font-family: 'Inter', sans-serif; font-weight: 400; text-align: center; border-left: none; border-top: 3px solid #0B3D2E;">
+            <div style="font-family: 'Newsreader', serif; font-size: 32px; font-weight: 600; color: #0B3D2E;">{{ total }}</div>
+            <div style="font-size: 13px; opacity: 0.7;">Total</div>
+        </div>
+    </div>
 
-    <!-- CATÉGORIE -->
-    <select id="select_categorie" onchange="afficherAutre('select_categorie', 'autre_categorie')">
-        <option value="">Catégorie juridique</option>
-        <option value="Droit constitutionnel">Droit constitutionnel</option>
-        <option value="Droit pénal">Droit pénal</option>
-        <option value="Droit civil">Droit civil</option>
-        <option value="Droit du travail">Droit du travail</option>
-        <option value="Droit foncier">Droit foncier</option>
-        <option value="Droit numérique">Droit numérique</option>
-        <option value="Droit administratif">Droit administratif</option>
-        <option value="Droit commercial">Droit commercial</option>
-        <option value="Droit fiscal">Droit fiscal</option>
-        <option value="Droit de la famille">Droit de la famille</option>
-        <option value="Autre">Autre</option>
-    </select>
-    <input type="text" id="autre_categorie" name="categorie" placeholder="Précisez la catégorie..." style="display:none; margin-top: 10px;">
-    <br><br>
+    <hr>
+    <h3 style="font-family: 'Newsreader', serif; color: #0B3D2E; margin: 24px 0 16px;">Ajouter une loi</h3>
+    <form method="post" action="/admin" enctype="multipart/form-data">
+        <input type="text" name="titre" placeholder="Titre de la loi">
+        <br><br>
 
-    <input type="text" name="numero" placeholder="Numéro officiel (ex: 2019-40)">
-    <br><br>
-    <input type="text" name="date" placeholder="Date">
-    <br><br>
-    <textarea name="contenu" rows="10" cols="60" placeholder="Contenu de la loi"></textarea>
-    <br><br>
-    <input type="file" name="pdf" accept=".pdf">
-    <br><br>
-    <button type="submit">Ajouter la loi</button>
-</form>
+        <select id="select_type" onchange="afficherAutre('select_type', 'autre_type')">
+            <option value="">Type de loi</option>
+            <option value="Loi">Loi</option>
+            <option value="Loi organique">Loi organique</option>
+            <option value="Code">Code</option>
+            <option value="Constitution">Constitution</option>
+            <option value="Ordonnance">Ordonnance</option>
+            <option value="Arrêté">Arrêté</option>
+            <option value="Autre">Autre</option>
+        </select>
+        <input type="text" id="autre_type" name="type" placeholder="Précisez le type..." style="display:none; margin-top: 10px;">
+        <br><br>
 
-<br><br>
-<hr>
+        <select id="select_categorie" onchange="afficherAutre('select_categorie', 'autre_categorie')">
+            <option value="">Catégorie juridique</option>
+            <option value="Droit constitutionnel">Droit constitutionnel</option>
+            <option value="Droit pénal">Droit pénal</option>
+            <option value="Droit civil">Droit civil</option>
+            <option value="Droit du travail">Droit du travail</option>
+            <option value="Droit foncier">Droit foncier</option>
+            <option value="Droit numérique">Droit numérique</option>
+            <option value="Droit administratif">Droit administratif</option>
+            <option value="Droit commercial">Droit commercial</option>
+            <option value="Droit fiscal">Droit fiscal</option>
+            <option value="Droit de la famille">Droit de la famille</option>
+            <option value="Autre">Autre</option>
+        </select>
+        <input type="text" id="autre_categorie" name="categorie" placeholder="Précisez la catégorie..." style="display:none; margin-top: 10px;">
+        <br><br>
 
-<h1>Ajouter un décret</h1>
-<form method="post" action="/admin/decret" enctype="multipart/form-data">
-    <input type="text" name="titre" placeholder="Titre du décret">
-    <br><br>
-    <select id="select_decret" onchange="afficherAutre('select_decret', 'autre_decret')">
-        <option value="">Type de décret</option>
-        <option value="Décret simple">Décret simple</option>
-        <option value="Décret d'application">Décret d'application</option>
-        <option value="Décret-loi">Décret-loi</option>
-        <option value="Décret réglementaire">Décret réglementaire</option>
-        <option value="Décret individuel">Décret individuel</option>
-        <option value="Autre">Autre</option>
-    </select>
-    <input type="text" id="autre_decret" name="categorie" placeholder="Précisez le type..." style="display:none; margin-top: 10px;">
-    <br><br>
-    <input type="text" name="numero" placeholder="Numéro officiel (ex: 2022-145)">
-    <br><br>
-    <input type="text" name="date" placeholder="Date">
-    <br><br>
-    <textarea name="contenu" rows="10" cols="60" placeholder="Contenu du décret"></textarea>
-    <br><br>
-    <input type="file" name="pdf" accept=".pdf">
-    <br><br>
-    <button type="submit">Ajouter le décret</button>
-</form>
+        <input type="text" name="numero" placeholder="Numéro officiel (ex: 2019-40)">
+        <br><br>
+        <input type="text" name="date" placeholder="Date">
+        <br><br>
+        <textarea name="contenu" rows="6" placeholder="Contenu de la loi" style="max-width: 100%;"></textarea>
+        <br><br>
+        <input type="file" name="pdf" accept=".pdf">
+        <br><br>
+        <button type="submit">Ajouter la loi</button>
+    </form>
 
-<br><br>
-<hr>
+    <br><br>
+    <hr>
 
-<h1>Gestion des lois</h1>
-<ul>
-{% for loi in lois %}
-<li>
-    {{ loi["titre"] }}
-    <a href="/modifier/{{ loi['id'] }}">Modifier</a>
-    |
-    <a href="/supprimer/{{ loi['id'] }}"
-       onclick="return confirm('Supprimer cette loi ?')">Supprimer</a>
-</li>
-{% endfor %}
-</ul>
+    <h3 style="font-family: 'Newsreader', serif; color: #0B3D2E; margin: 24px 0 16px;">Ajouter un décret</h3>
+    <form method="post" action="/admin/decret" enctype="multipart/form-data">
+        <input type="text" name="titre" placeholder="Titre du décret">
+        <br><br>
+        <select id="select_decret" onchange="afficherAutre('select_decret', 'autre_decret')">
+            <option value="">Type de décret</option>
+            <option value="Décret simple">Décret simple</option>
+            <option value="Décret d'application">Décret d'application</option>
+            <option value="Décret-loi">Décret-loi</option>
+            <option value="Décret réglementaire">Décret réglementaire</option>
+            <option value="Décret individuel">Décret individuel</option>
+            <option value="Autre">Autre</option>
+        </select>
+        <input type="text" id="autre_decret" name="categorie" placeholder="Précisez le type..." style="display:none; margin-top: 10px;">
+        <br><br>
+        <input type="text" name="numero" placeholder="Numéro officiel (ex: 2022-145)">
+        <br><br>
+        <input type="text" name="date" placeholder="Date">
+        <br><br>
+        <textarea name="contenu" rows="6" placeholder="Contenu du décret" style="max-width: 100%;"></textarea>
+        <br><br>
+        <input type="file" name="pdf" accept=".pdf">
+        <br><br>
+        <button type="submit">Ajouter le décret</button>
+    </form>
 
-<hr>
+    <br><br>
+    <hr>
 
-<h1>Gestion des décrets</h1>
-<ul>
-{% for decret in decrets %}
-<li>
-    {{ decret["titre"] }}
-    <a href="/modifier-decret/{{ decret['id'] }}">Modifier</a>
-    |
-    <a href="/supprimer-decret/{{ decret['id'] }}"
-       onclick="return confirm('Supprimer ce décret ?')">Supprimer</a>
-</li>
-{% endfor %}
-</ul>
+    <h3 style="font-family: 'Newsreader', serif; color: #0B3D2E; margin: 24px 0 16px;">Ajouter une décision de justice</h3>
+    <form method="post" action="/admin/jurisprudence" enctype="multipart/form-data">
+        <input type="text" name="titre" placeholder="Titre de la décision" required>
+        <br><br>
+        <select name="juridiction" required>
+            <option value="">Juridiction</option>
+            <option value="Cour constitutionnelle">Cour constitutionnelle</option>
+            <option value="Cour Suprême">Cour Suprême</option>
+            <option value="CRIET">CRIET</option>
+            <option value="Tribunal">Tribunal</option>
+        </select>
+        <br><br>
+        <input type="text" name="chambre" placeholder="Chambre (ex: Chambre civile)">
+        <br><br>
+        <input type="text" name="numero_affaire" placeholder="Numéro d'affaire (ex: DCC 21-001)">
+        <br><br>
+        <input type="text" name="date" placeholder="Date de la décision" required>
+        <br><br>
+        <input type="text" name="parties" placeholder="Parties (ex: Dupont vs État du Bénin)">
+        <br><br>
+        <input type="text" name="matiere" placeholder="Matière juridique (ex: Droit du travail)">
+        <br><br>
+        <textarea name="resume" rows="4" placeholder="Résumé de la décision" style="max-width: 100%;"></textarea>
+        <br><br>
+        <textarea name="decision" rows="8" placeholder="Dispositif complet" style="max-width: 100%;" required></textarea>
+        <br><br>
+        <input type="text" name="textes_cites" placeholder="IDs des textes cités (ex: 1,3,5)">
+        <br><br>
+        <input type="file" name="pdf" accept=".pdf">
+        <br><br>
+        <button type="submit">Ajouter la décision</button>
+    </form>
 
-<a href="/logout">
-    <button type="button">Déconnexion</button>
-</a>
+    <br><br>
+    <hr>
+
+    <h3 style="font-family: 'Newsreader', serif; color: #0B3D2E; margin: 24px 0 12px;">Gestion des lois</h3>
+    <div style="background: #FFFFFF; border: 1px solid rgba(11,61,46,0.15); margin-bottom: 32px;">
+        {% for loi in lois %}
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; border-bottom: 1px solid rgba(11,61,46,0.08);">
+            <span>{{ loi["titre"] }}</span>
+            <span style="font-size: 13px;">
+                <a href="/modifier/{{ loi['id'] }}" style="color: #0B3D2E;">Modifier</a>
+                &nbsp;|&nbsp;
+                <a href="/supprimer/{{ loi['id'] }}" style="color: #791F1F;"
+                   onclick="return confirm('Supprimer cette loi ?')">Supprimer</a>
+            </span>
+        </div>
+        {% endfor %}
+    </div>
+
+    <h3 style="font-family: 'Newsreader', serif; color: #0B3D2E; margin: 24px 0 12px;">Gestion des décrets</h3>
+    <div style="background: #FFFFFF; border: 1px solid rgba(11,61,46,0.15); margin-bottom: 32px;">
+        {% for decret in decrets %}
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; border-bottom: 1px solid rgba(11,61,46,0.08);">
+            <span>{{ decret["titre"] }}</span>
+            <span style="font-size: 13px;">
+                <a href="/modifier-decret/{{ decret['id'] }}" style="color: #0B3D2E;">Modifier</a>
+                &nbsp;|&nbsp;
+                <a href="/supprimer-decret/{{ decret['id'] }}" style="color: #791F1F;"
+                   onclick="return confirm('Supprimer ce décret ?')">Supprimer</a>
+            </span>
+        </div>
+        {% endfor %}
+    </div>
+
+    <h3 style="font-family: 'Newsreader', serif; color: #0B3D2E; margin: 24px 0 12px;">Gestion des décisions</h3>
+    <div style="background: #FFFFFF; border: 1px solid rgba(11,61,46,0.15); margin-bottom: 32px;">
+        {% for j in jurisprudences %}
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; border-bottom: 1px solid rgba(11,61,46,0.08);">
+            <span>{{ j["titre"] }} <span style="font-size: 12px; opacity: 0.6;">— {{ j["juridiction"] }}</span></span>
+            <span style="font-size: 13px;">
+                <a href="/modifier-jurisprudence/{{ j['id'] }}" style="color: #0B3D2E;">Modifier</a>
+                &nbsp;|&nbsp;
+                <a href="/supprimer-jurisprudence/{{ j['id'] }}" style="color: #791F1F;"
+                   onclick="return confirm('Supprimer cette décision ?')">Supprimer</a>
+            </span>
+        </div>
+        {% endfor %}
+        {% if not jurisprudences %}
+        <div style="padding: 16px 20px; opacity: 0.6; font-size: 14px;">Aucune décision ajoutée pour l'instant.</div>
+        {% endif %}
+    </div>
+
+    <a href="/logout">
+        <button type="button" style="background-color: #791F1F;">Déconnexion</button>
+    </a>
 
 </section>
 
@@ -156,19 +226,19 @@ function afficherAutre(selectId, inputId) {
     } else {
         input.style.display = "none";
         input.required = false;
-        // Quand une option normale est choisie, on met sa valeur dans l'input caché
         input.value = select.value;
     }
 }
 
-// Au submit, s'assurer que les valeurs des selects sont bien envoyées
 document.querySelectorAll("form").forEach(form => {
     form.addEventListener("submit", function() {
         document.querySelectorAll("select").forEach(select => {
             if (select.value !== "Autre" && select.value !== "") {
-                const inputId = select.id.replace("select_", "autre_");
-                const input = document.getElementById(inputId);
-                if (input) input.value = select.value;
+                const inputId = select.id ? select.id.replace("select_", "autre_") : null;
+                if (inputId) {
+                    const input = document.getElementById(inputId);
+                    if (input) input.value = select.value;
+                }
             }
         });
     });

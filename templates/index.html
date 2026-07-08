@@ -13,6 +13,7 @@
     <a href="/">Accueil</a>
     <a href="/lois">Lois</a>
     <a href="/decrets">Décrets</a>
+    <a href="/jurisprudences">Jurisprudence</a>
     <a href="/recherche">Recherche</a>
 </div>
 </nav>
@@ -88,7 +89,32 @@
         {% endfor %}
     </div>
     <a href="/decrets"><button type="button" style="margin-top: 10px;">Voir tous les décrets →</button></a>
+<hr style="margin-top: 30px;">
 
+<!-- DERNIÈRES DÉCISIONS -->
+<h2 style="margin-top: 30px;">Dernières décisions de justice</h2>
+<div class="liste-lois" style="display: block !important;">
+    {% for decision in dernieres_decisions %}
+    <a href="/jurisprudence/{{ decision.id }}" class="lien-loi">
+        <div class="carte-loi">
+            <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px;">
+                <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #C8552B; font-weight: 500;">
+                    {{ decision.juridiction }}{% if decision.numero_affaire %} — {{ decision.numero_affaire }}{% endif %}
+                </span>
+                <span style="font-size: 12px; color: #1A1A1A; opacity: 0.5;">{{ decision.date }}</span>
+            </div>
+            <div>{{ decision.titre }}</div>
+            {% if decision.matiere %}
+            <div style="font-size: 12px; color: #0B3D2E; opacity: 0.7; margin-top: 6px;">{{ decision.matiere }}</div>
+            {% endif %}
+        </div>
+    </a>
+    {% endfor %}
+    {% if not dernieres_decisions %}
+    <p style="opacity: 0.6; font-size: 15px;">Aucune décision ajoutée pour l'instant.</p>
+    {% endif %}
+</div>
+<a href="/jurisprudences"><button type="button" style="margin-top: 10px;">Voir toutes les décisions →</button></a>
 </section>
 
 </body>

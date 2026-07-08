@@ -43,6 +43,9 @@ def home(request: Request):
     derniers_decrets = curseur.execute(
         "SELECT * FROM textes WHERE nature = 'Décret' ORDER BY id DESC LIMIT 3"
     ).fetchall()
+    dernieres_decisions = curseur.execute(
+        "SELECT * FROM jurisprudences ORDER BY id DESC LIMIT 3"
+    ).fetchall()
 
     connexion.close()
 
@@ -53,7 +56,8 @@ def home(request: Request):
             "nb_lois": nb_lois,
             "nb_decrets": nb_decrets,
             "dernieres_lois": dernieres_lois,
-            "derniers_decrets": derniers_decrets
+            "derniers_decrets": derniers_decrets,
+            "dernieres_decisions": dernieres_decisions
         }
     )
 
@@ -362,16 +366,20 @@ def admin(request: Request):
     nb_decrets = curseur.execute(
         "SELECT COUNT(*) FROM textes WHERE nature = 'Décret'"
     ).fetchone()[0]
+    nb_jurisprudences = curseur.execute(
+        "SELECT COUNT(*) FROM jurisprudences"
+    ).fetchone()[0]
     lois = curseur.execute(
         "SELECT * FROM textes WHERE nature != 'Décret' ORDER BY id DESC"
     ).fetchall()
     decrets = curseur.execute(
         "SELECT * FROM textes WHERE nature = 'Décret' ORDER BY id DESC"
     ).fetchall()
+    jurisprudences = curseur.execute(
+        "SELECT * FROM jurisprudences ORDER BY id DESC"
+    ).fetchall()
 
     connexion.close()
-
-    message = request.session.pop("message", None)
 
     return templates.TemplateResponse(
         request=request,
@@ -379,10 +387,11 @@ def admin(request: Request):
         context={
             "nb_lois": nb_lois,
             "nb_decrets": nb_decrets,
-            "total": nb_lois + nb_decrets,
+            "nb_jurisprudences": nb_jurisprudences,
+            "total": nb_lois + nb_decrets + nb_jurisprudences,
             "lois": lois,
             "decrets": decrets,
-            "message": message
+            "jurisprudences": jurisprudences
         }
     )
 
@@ -728,7 +737,8 @@ def ajouter_jurisprudence(
     connexion.commit()
     connexion.close()
 
-    return RedirectResponse(url="/jurisprudences", status_code=303)
+    request.session["message"] = "Décision ajoutée avec succès ✅"
+    return RedirectResponse(url="/admin", status_code=303)
 
 
 @app.get("/modifier-jurisprudence/{id}", response_class=HTMLResponse)
@@ -801,7 +811,8 @@ def enregistrer_modification_jurisprudence(
     connexion.commit()
     connexion.close()
 
-    return RedirectResponse(url=f"/jurisprudence/{id}", status_code=303)
+    request.session["message"] = "Décision modifiée avec succès ✅"
+    return RedirectResponse(url="/admin", status_code=303)
 
 
 @app.get("/supprimer-jurisprudence/{id}")
@@ -815,7 +826,8 @@ def supprimer_jurisprudence(request: Request, id: int):
     connexion.commit()
     connexion.close()
 
-    return RedirectResponse(url="/jurisprudences", status_code=303)
+    request.session["message"] = "Décision supprimée ✅"
+    return RedirectResponse(url="/admin", status_code=303)
 # ─── RECHERCHE AVANCÉE ───────────────────────────────────────────────────
 
 @app.get("/recherche", response_class=HTMLResponse)
