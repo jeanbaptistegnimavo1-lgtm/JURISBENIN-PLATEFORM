@@ -21,7 +21,11 @@
     <div class="ref-badge">{{ "N° " + numero if numero else "N° " + id|string }} — {{ categorie if categorie else "Décret" }}</div>
 
     <h1>{{ titre }}</h1>
-
+{% if provisoire %}
+<div style="background-color: #fff3cd; color: #856404; border: 1px solid #ffc107; padding: 12px 20px; margin-bottom: 20px; font-size: 14px;">
+    ⚠️ <strong>Contenu provisoire</strong> — Ce texte est un résumé approximatif. Le contenu officiel sera mis à jour prochainement.
+</div>
+{% endif %}
     <p><strong>Type :</strong> {{ categorie if categorie else "Décret" }}</p>
     <p><strong>Date :</strong> {{ date }}</p>
 

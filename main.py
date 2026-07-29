@@ -173,6 +173,7 @@ def loi_detail(request: Request, id: int):
             "date": loi["date"],
             "contenu": loi["contenu"],
             "pdf": loi["pdf"],
+            "provisoire": loi["provisoire"],
             "admin": request.session.get("admin"),
             "similaires": similaires
         }
@@ -308,6 +309,7 @@ def decret_detail(request: Request, id: int):
             "date": decret["date"],
             "contenu": decret["contenu"],
             "pdf": decret["pdf"],
+            "provisoire": decret["provisoire"],
             "admin": request.session.get("admin"),
             "similaires": similaires
         }
